@@ -1,21 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { key } from '../../asset/pass';
-import { Loader } from 'components/Loader/Loader'; 
+import { Loader } from 'components/Loader/Loader';
 
 function Movies() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const movieName = searchParams.get('query') ?? '';
-   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const firstFechMovie = movieName
 
   useEffect(() => {
+    if (firstFechMovie === '') {
+      return;
+    }
     setIsLoading(true);
     const fetchMovie = async () => {
       try {
         const response = await fetch(
-          `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${movieName}`
+          `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${firstFechMovie}`
         );
         const data = await response.json();
         setResults(data.results);
@@ -27,17 +32,15 @@ function Movies() {
     };
 
     fetchMovie();
-    // eslint-disable-next-line
-  }, []);
+  }, [firstFechMovie]);
 
   const handleChange = event => {
     setQuery(event.target.value);
-    setSearchParams(`query=${event.target.value}`);
   };
 
   const handleSubmit = async event => {
     setIsLoading(true);
-    event.preventDefault();    
+    event.preventDefault();
     try {
       const response = await fetch(
         `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${query}`
@@ -45,6 +48,7 @@ function Movies() {
       const data = await response.json();
       setResults(data.results);
       setIsLoading(false);
+      setSearchParams(`query=${query}`);
     } catch (error) {
       console.error('Error searching for movie:', error);
       setIsLoading(false);

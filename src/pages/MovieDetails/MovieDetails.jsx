@@ -30,7 +30,7 @@ function MovieDetails() {
   }, [movieId]);
 
   const userScoreCount = () => {
-    return movie.vote_average.toFixed(1) * 10;
+    if (movie.vote_average) return movie.vote_average.toFixed(1) * 10;
   };
 
   if (error) {
@@ -54,7 +54,7 @@ function MovieDetails() {
         <b>Runtime:</b> {movie.runtime} minutes
       </p>
       <p>
-        <b>Genres:</b> {movie.genres.map(genre => genre.name).join(', ')}
+      <b>Genres:</b> {Array.isArray(movie.genres) && movie.genres.map(genre => genre.name).join(', ')}
       </p>
       <img
         src={
@@ -80,6 +80,14 @@ function MovieDetails() {
             state={{ from: backLinkHref }}
           >
             View Reviews
+          </Link>
+        </li>
+        <li>
+          <Link
+            to={`/goit-react-hw-05-movies/movies/${movieId}/watch/providers`}
+            state={{ from: backLinkHref }}
+          >
+            View Providers
           </Link>
         </li>
       </ul>
